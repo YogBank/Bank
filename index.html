@@ -1,73 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Bank of yog</title>
+    <title>Coin Prices</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        @import url('https://fonts.cdnfonts.com/css/digital');
+        @import url('https://fonts.cdnfonts.com/css/slanted-shift');
+
         body {
-            background-color: rgb(20, 20, 20);
-            color: goldenrod;
-            font-family: 'Digital', sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        .card {
-            background-image: linear-gradient(to right bottom, #e8c264, #f6da90);
-            border-radius: 10px;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-            padding: 2rem;
-            margin-top: 5rem;
-            margin-bottom: 5rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-        .balance {
-            font-size: 4rem;
-            margin-top: 1rem;
-            margin-bottom: 2rem;
-            padding: 1rem 2rem;
-            border-radius: 50px;
             background-color: black;
+            color: cyan;
+            font-family: 'slanted ITALIC shift', sans-serif;
+            text-align: center;
+            padding-top: 100px;
+            font-size: 24px;
         }
-        .depositor {
-            font-size: 3.5rem;
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            text-align: left;
+
+        h1 {
+            font-size: 36px;
+        }
+
+        #coinPrices {
+            display: inline-block;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+        }
+
+        #coinPrices p {
+            margin: 10px 0;
+        }
+
+        #coinPrices span {
+            font-weight: bold;
         }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Make a GET request to CoinGecko API
-            $.get("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd", function(data) {
-                // Extract the price of Ethereum from the API response
-                var ethereumPrice = data.ethereum.usd;
+        $(document).ready(function(){
+            function updatePrices() {
+                $.ajax({
+                    url: "https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,pax-gold&vs_currencies=usd",
+                    type: "GET",
+                    success: function(data) {
+                        var ethPrice = data.ethereum.usd;
+                        var btcPrice = data.bitcoin.usd;
+                        var paxgPrice = data["pax-gold"].usd;
 
-                // Update the Ethereum price in the balance element
-                $(".balance").text("$" + ethereumPrice.toFixed(2));
-            });
+                        $("#ethPrice").text(ethPrice);
+                        $("#btcPrice").text(btcPrice);
+                        $("#paxgPrice").text(paxgPrice);
+                    },
+                    error: function() {
+                        console.log("Error fetching data from CoinGecko API.");
+                    }
+                });
+            }
+
+            updatePrices(); // Initial update
+            setInterval(updatePrices, 5000); // Update every 5 seconds
         });
     </script>
 </head>
 <body>
-    <div class="card">
-        <div class="depositor">
-            balance
-        </div>
-        <div class="balance">
-            $
-        </div>
+    <h1>Coin Prices</h1>
+    <div id="coinPrices">
+        <p>Ethereum (ETH): <span id="ethPrice"></span></p>
+        <p>Bitcoin (BTC): <span id="btcPrice"></span></p>
+        <p>Pax Gold (PAXG): <span id="paxgPrice"></span></p>
     </div>
 </body>
 </html>
