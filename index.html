@@ -1,70 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Coin Prices</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        @import url('https://fonts.cdnfonts.com/css/slanted-shift');
+  <title>Silver and Gold Prices</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'SF Chaerilidae', sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
 
-        body {
-            background-color: black;
-            color: cyan;
-            font-family: 'slanted ITALIC shift', sans-serif;
-            text-align: center;
-            padding-top: 100px;
-            font-size: 24px;
-        }
+    h1 {
+      text-align: center;
+    }
 
-        h1 {
-            font-size: 36px;
-        }
+    .price-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+    }
 
-        #coinPrices {
-            display: inline-block;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-        }
+    .price {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-        #coinPrices p {
-            margin: 10px 0;
-        }
+    /* Added CSS rules for color changes */
+    .price.yellow {
+      color: yellow;
+    }
 
-        #coinPrices span {
-            font-weight: bold;
-        }
-    </style>
-    <script>
-        $(document).ready(function(){
-            function updatePrices() {
-                $.ajax({
-                    url: "https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,pax-gold&vs_currencies=usd",
-                    type: "GET",
-                    success: function(data) {
-                        var ethPrice = data.ethereum.usd;
-                        var btcPrice = data.bitcoin.usd;
-                        var paxgPrice = data["pax-gold"].usd;
+    .price.red {
+      color: red;
+    }
 
-                        $("#ethPrice").text(ethPrice);
-                        $("#btcPrice").text(btcPrice);
-                        $("#paxgPrice").text(paxgPrice);
-                    },
-                    error: function() {
-                        console.log("Error fetching data from CoinGecko API.");
-                    }
-                });
-            }
+    .price.purple {
+      color: purple;
+    }
 
-            updatePrices(); // Initial update
-            setInterval(updatePrices, 5000); // Update every 5 seconds
-        });
-    </script>
+    .price.yellowish-green {
+      color: #ADFF2F;
+    }
+
+    .price.green {
+      color: green;
+    }
+
+    .price.cyan {
+      color: cyan;
+    }
+
+    .price.blue {
+      color: blue;
+    }
+
+    /* Added CSS rule for asterisk size */
+    .price.asterisk {
+      font-size: 192px;
+    }
+  </style>
+  <link href="https://fonts.cdnfonts.com/css/sf-chaerilidae-2" rel="stylesheet">
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/sf-chaerilidae-2');
+  </style>
 </head>
 <body>
-    <h1>Coin Prices</h1>
-    <div id="coinPrices">
-        <p>Ethereum (ETH): <span id="ethPrice"></span></p>
-        <p>Bitcoin (BTC): <span id="btcPrice"></span></p>
-        <p>Pax Gold (PAXG): <span id="paxgPrice"></span></p>
-    </div>
+  <h1>Silver and Gold Prices</h1>
+  <div class="price-container">
+    <div class="price asterisk" id="silver-price"></div>
+    <div class="price" id="gold-price"></div>
+  </div>
+
+  <script>
+    // Fetch silver and gold prices from GoldPrice.org API
+    fetch('https://data-asg.goldprice.org/dbXRates/USD')
+      .then(response => response.json())
+      .then(data => {
+        const silverPrice = data.items[0].xagPrice.toFixed(2);
+        const goldPrice = data.items[0].xauPrice.toFixed(2);
+        const silverPriceElement = document.getElementById('silver-price');
+
+        // Check silver price range and apply appropriate CSS class
+        if (silverPrice >= 24.2 && silverPrice <= 24.5) {
+          silverPriceElement.classList.add('blue');
+        } else if (silverPrice >= 24 && silverPrice < 24.2) {
+          silverPriceElement.classList.add('cyan');
+        } else if (silverPrice >= 23.8 && silverPrice < 24) {
+          silverPriceElement.classList.add('green');
+        } else if (silverPrice >= 23.5 && silverPrice < 23.8) {
+          silverPriceElement.classList.add('yellowish-green');
+        } else if (silverPrice >= 23.2 && silverPrice < 23.5) {
+          silverPriceElement.classList.add('yellow');
+        } else if (silverPrice >= 23 && silverPrice < 23.2) {
+          silverPriceElement.classList.add('red');
+        } else if (silverPrice >= 22.8 && silverPrice < 23) {
+          silverPriceElement.classList.add('purple');
+        }
+
+        silverPriceElement.innerHTML = '&#42;'; // Replace silver price with asterisk
+        document.getElementById('gold-price').textContent = `Gold Price: $${goldPrice} per ounce`;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  </script>
 </body>
 </html>
