@@ -5,31 +5,72 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
         }
 
         #result {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        #label {
             font-size: 18px;
-            font-weight: bold;
             color: #555;
-            margin-bottom: 10px;
+            display: inline;
+            font-weight: bold;
         }
     </style>
     <script>
+        function showLoadingAnimation() {
+            var loadingAnimation = document.getElementById("loading");
+            var intervalId;
+            var animation = ". ";
+            var counter = 0;
+
+            loadingAnimation.innerHTML = animation;
+
+            intervalId = setInterval(function() {
+                animation += ". ";
+                counter++;
+
+                if (counter === 3) {
+                    animation = ". ";
+                    counter = 0;
+                }
+
+                loadingAnimation.innerHTML = animation;
+            }, 500); // Change animation speed to 0.5 seconds (500 milliseconds)
+
+            return intervalId;
+        }
+
+        function hideLoadingAnimation(intervalId) {
+            clearInterval(intervalId);
+            var loadingAnimation = document.getElementById("loading");
+            loadingAnimation.innerHTML = "";
+        }
+
         function extractH4Text() {
             var proxyUrl = "https://api.allorigins.win/get?url=";
             var urlInput = "https://lbprate.com"; // The URL you want to fetch data from
 
             var fullUrl = proxyUrl + encodeURIComponent(urlInput);
 
+            var intervalId = showLoadingAnimation();
+
             fetch(fullUrl)
                 .then(response => response.json())
                 .then(data => {
+                    hideLoadingAnimation(intervalId);
+
                     var parser = new DOMParser();
                     var doc = parser.parseFromString(data.contents, "text/html");
                     var h4Text = doc.querySelector("h4 > span:nth-child(2)").textContent.trim();
@@ -37,6 +78,7 @@
                     document.getElementById("result").innerHTML = number;
                 })
                 .catch(error => {
+                    hideLoadingAnimation(intervalId);
                     console.log("Error:", error);
                     document.getElementById("result").innerHTML = "An error occurred.";
                 });
@@ -47,7 +89,10 @@
     </script>
 </head>
 <body>
-    <div id="label">Exchange Rate:</div>
-    <div id="result"></div>
+    <div class="card">
+        <span id="label">Exchange Rate: </span>
+        <span id="loading"></span>
+        <span id="result"></span>
+    </div>
 </body>
 </html>
