@@ -1,111 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Silver and Gold Prices</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: 'SF Chaerilidae', sans-serif;
-      padding: 20px;
-      margin: 0;
-    }
+    <title>H4 Text Extractor</title>
+    <script>
+        function extractH4Text() {
+            var proxyUrl = "https://api.allorigins.win/get?url=";
+            var urlInput = "https://lbprate.com"; // The URL you want to fetch data from
 
-    h1 {
-      text-align: center;
-    }
-
-    .price-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 30px;
-    }
-
-    .price {
-      font-size: 48px;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    /* Added CSS rules for color changes */
-    .price.yellow {
-      color: yellow;
-    }
-
-    .price.red {
-      color: red;
-    }
-
-    .price.purple {
-      color: purple;
-    }
-
-    .price.yellowish-green {
-      color: #ADFF2F;
-    }
-
-    .price.green {
-      color: green;
-    }
-
-    .price.cyan {
-      color: cyan;
-    }
-
-    .price.blue {
-      color: blue;
-    }
-
-    /* Added CSS rule for asterisk size */
-    .price.asterisk {
-      font-size: 192px;
-    }
-  </style>
-  <link href="https://fonts.cdnfonts.com/css/sf-chaerilidae-2" rel="stylesheet">
-  <style>
-    @import url('https://fonts.cdnfonts.com/css/sf-chaerilidae-2');
-  </style>
-</head>
-<body>
-  <h1>Silver and Gold Prices</h1>
-  <div class="price-container">
-    <div class="price asterisk" id="silver-price"></div>
-    <div class="price" id="gold-price"></div>
-  </div>
-
-  <script>
-    // Fetch silver and gold prices from GoldPrice.org API
-    fetch('https://data-asg.goldprice.org/dbXRates/USD')
-      .then(response => response.json())
-      .then(data => {
-        const silverPrice = data.items[0].xagPrice.toFixed(2);
-        const goldPrice = data.items[0].xauPrice.toFixed(2);
-        const silverPriceElement = document.getElementById('silver-price');
-
-        // Check silver price range and apply appropriate CSS class
-        if (silverPrice >= 24.2 && silverPrice <= 24.5) {
-          silverPriceElement.classList.add('blue');
-        } else if (silverPrice >= 24 && silverPrice < 24.2) {
-          silverPriceElement.classList.add('cyan');
-        } else if (silverPrice >= 23.8 && silverPrice < 24) {
-          silverPriceElement.classList.add('green');
-        } else if (silverPrice >= 23.5 && silverPrice < 23.8) {
-          silverPriceElement.classList.add('yellowish-green');
-        } else if (silverPrice >= 23.2 && silverPrice < 23.5) {
-          silverPriceElement.classList.add('yellow');
-        } else if (silverPrice >= 23 && silverPrice < 23.2) {
-          silverPriceElement.classList.add('red');
-        } else if (silverPrice >= 22.8 && silverPrice < 23) {
-          silverPriceElement.classList.add('purple');
+            var fullUrl = proxyUrl + encodeURIComponent(urlInput);
+            
+            fetch(fullUrl)
+                .then(response => response.json())
+                .then(data => {
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(data.contents, "text/html");
+                    var h4Text = doc.querySelector("h4 > span:nth-child(2)").textContent.trim();
+                    var number = h4Text.split("at")[1].trim();
+                    document.getElementById("result").innerHTML = "Exchange Rate: " + number;
+                })
+                .catch(error => {
+                    console.log("Error:", error);
+                    document.getElementById("result").innerHTML = "An error occurred.";
+                });
         }
 
-        silverPriceElement.innerHTML = '&#42;'; // Replace silver price with asterisk
-        document.getElementById('gold-price').textContent = `Gold Price: $${goldPrice} per ounce`;
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  </script>
+        // Automatically extract H4 text when the page is loaded
+        window.addEventListener("load", extractH4Text);
+    </script>
+</head>
+<body>
+    <h1>H4 Text Extractor</h1>
+    <p>Exchange Rate:</p>
+    <div id="result"></div>
 </body>
 </html>
